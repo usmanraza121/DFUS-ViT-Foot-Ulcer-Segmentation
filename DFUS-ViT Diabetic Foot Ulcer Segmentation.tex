@@ -1,0 +1,424 @@
+
+
+\documentclass[review]{elsarticle}
+\graphicspath{ {./figures/} }
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{verbatim} %comments
+\usepackage{apalike}
+\restylefloat{figure}
+\floatstyle{plaintop} %table caption at top
+\restylefloat{table}
+\usepackage{csquotes}
+\usepackage{multirow} % For multirow in tables
+\usepackage{graphicx} % For \resizebox
+\usepackage{array}
+\usepackage{amssymb} % For \checkmark
+
+\journal{Biocybernetics and Biomedical Engineering}
+
+%% For ESWA journal you need to use APA style
+\bibliographystyle{model5-names}\biboptions{authoryear}
+%\bibliographystyle{apalike}
+%\bibliographystyle{apacite}
+
+\begin{document}
+	\begin{frontmatter}
+		
+		%The title page must contain the title of the paper and the full name/full affiliation with country/e-mail address for each author and co-author of the manuscript. Please make sure you have included all elements listed below with your manuscript submission.
+		
+\begin{titlepage}
+\begin{center}
+\vspace*{1cm}
+				
+\textbf{ \large DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer}
+
+\vspace{1.5cm}
+
+% Author names and affiliations
+Muhammad Zaka-Ud-Din$^{a}$ (muhammad.zaka-ud-din@uniud.it), Muhammad Usman$^b$ (muhammad.usman1@pg.edu.pl), Jacek Ruminski$^b$ (jacek.ruminski@pg.edu.pl) \\
+
+\hspace{10pt}
+				
+\begin{flushleft}
+\small  
+		$^a$ Department of Mathematics, Computer Science and Physics University of Udine, Udine 33100, Italy \\
+		$^b$ Faculty of Electronics, Telecommunications and Informatics, Department of Biomedical Engineering, Gdansk University of Technology, Gdansk 80-222, Poland\\
+		%$^c$ Gdansk University of Technology, Gdansk 80-222, Poland
+					
+
+					
+	\vspace{1cm}
+	\textbf{Corresponding Author:} \\
+	Muhammad Usman \\
+	Gdansk University of Technology, Gdansk 80-222, Poland \\
+	Tel: (48)58 347 2009 \\
+	Email: muhammad.usman1@pg.edu.pl
+					
+\end{flushleft}        
+\end{center}
+\end{titlepage}
+		
+	\title{DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer}
+	
+	\author[label1]{Muhammad Zaka-Ud-Din}
+	\ead{muhammad.zaka-ud-din@uniud.it}
+	
+	\author[label2]{Muhammad Usman\corref{cor1}}
+	\ead{muhammad.usman1@pg.edu.pl}
+	
+	\author[label2]{Jacek Ruminski}
+	\ead{jacek.ruminski@pg.edu.pl}
+	
+	\cortext[cor1]{Corresponding author.}
+	%\address[label1]{Full address of first author, including the country name}
+	\address[label1]{Department of Mathematics, Computer Science and Physics, University of Udine, Udine 33100, Italy}
+	\address[label2]{Faculty of Electronics, Telecommunications and Informatics, Department of Biomedical Engineering, Gdansk University of Technology, Gdansk 80-222, Poland}
+
+	%-------------------------------------------------------abstract---------------------------------------------------------
+\begin{abstract}
+\label{Abstract}
+The foot ulcer is a diabetes mellitus complication. It has a risk factor for lower leg amputations and a higher mortality rate. The early and accurate detection of foot wounds severity plays a vital role in proper treatment and prognosis. Visual inspection for diagnosis by clinical professionals is a common approach but is prone to human error. Meanwhile, computer-aided methods are alternative and highly efficient. However, the existing approaches present poor performance due to the diverse shape and sizes of Diabetic Foot Ulcers (DFUs). Skin color is another factor that makes it difficult for existing approaches to distinguish the boundaries of affected areas. To overcome these challenges, this article proposes a DFUS-ViT model that combines a vision transformer backbone with the Cascade Feature Enhancement Block (CFEB) and the Cascade Feature Fusion Module (CFFM).
+%To overcome these challenges, this article proposes a vision transformer-backboned approach named \enquote{DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer} for automatic foot ulcer segmentation. We used the pre-trained weights of the vision transformer due to its promising performance to sort out the limited training sample availability issue. In addition to the transformer encoder, the proposed model consists of Cascade Feature Enhancement Block (CFEB) and Cascade Feature Fusion Module (CFFM). 
+CFEB refines the encoder-extracted feature maps to deal with boundary issues. At the same time, CFFM integrates these enhanced multiscale features to deal with the varying shape and size issues for final prediction. The proposed model is trained using the Advancing the Zenith of Healthcare (AZH) Wound and Vascular Center (AZH-WVC) and the Foot Ulcer Segmentation Challenge (FUSeg) combined training sets. We evaluated the proposed DFUS-ViT on three different, publicly available datasets. The results were compared to several other approaches, showing that the DFUS-ViT model achieved state-of-the-art performance. It obtained a 92.76\% dice score and 86.49\% IoU on the Foot Ulcer Segmentation Challenge dataset and surpassed the existing approaches. The preliminary results demonstrate the generalization ability of the model as well as the effectiveness of the mixed training data strategy for accurate ulcer foot segmentation. To facilitate reproducibility and further research, the source code and pretrained weights are publicly available on GitHub: \href{https://github.com/ZAKAUDD/DFUS-ViT}{https://github.com/ZAKAUDD/DFUS-ViT}.
+\end{abstract}
+		
+		\begin{keyword}
+			Artificial neural network, Foot ulcer segmentation, Feature enhancement, Vision transformer, Chronic wounds segmentation
+		\end{keyword}
+		
+	\end{frontmatter}
+%-------------------------------------------------------introduction---------------------------------------------------------	
+
+	\section{Introduction}
+	\label{Introduction}
+	
+	Diabetes Mellitus (DM), also known as Diabetes, is a consequential and chronic metabolic disease characterized by high blood glucose levels. Insufficient insulin production or the human body’s inability to use insulin effectively are the causes of blood glucose elevation \cite{jeffcoate2003diabetic}. Diabetes may potentially also cause several fatal diseases including blindness, cardiovascular disease, kidney failure, and Diabetic Foot Ulcers (DFU). These diseases could paralyze the patients or even cause the death \cite{wild2004global}. Diabetes is rapidly increasing, with an estimated increase of 108 million to 422 million patients worldwide in recent years. In 2012, over 1.5 million deaths were reported solely due to diabetes. More alarmingly, 43\% of these deaths were reported with under 70 years age. It is estimated from the statistical records that by 2035 the DM will affect up to around 600 million people around the world \cite{bakker20162015}.
+\newline\indent Every year, more than one million patients lose part of their legs due to late diagnosis and ineffective treatment of DFU \cite{armstrong1998validation}. Various factors, including skin infections, nerve damage, and foot deformities, are the significant causes of DFU. For a diabetic patient, inadequate blood flow due to diabetes hampers the healing process of the DFU. In this regard, a regular examination of DFU is considered an effective strategy to regulate the treatment strategy and ensuring the healing process. Failure of antibiotic treatment of infected DFU leads to amputation and sometimes to loss of life  \cite{ghanassia2008long}. Various studies have estimated that at least 10\% of diabetes patients can face any form of DFU at any point in their lifetime, which could rise to 25\% depending upon the life style \cite{jeffcoate2003diabetic,cavanagh2005treatment}. DFU also affects mental health and quality of life, resulting in anxiety and depression \cite{ahmad2018anxiety}. Furthermore, recent investigations have revealed that individuals have a 70\% likelihood of recurrence of DFU after treatment \cite{ogurtsova2021cumulative}. Recent research represents 29.0, 30.5, 46.2, and 56.6\% five years mortality rates for Charcot, DFU, minor, and major amputations, respectively \cite{armstrong2020five}. 
+\newline\indent In general, DFUs are irregular in structure and have uncertain external boundaries. The DFU and its encompassing skin color and appearance vary at every stage of DFU. This change ranges from redness, blisters, callus formation, and significant tissue types like granulation, bleeding, slough, and scaly skin \cite{lipsky2004diagnosis}. The color and appearance of the DFU's surrounding skin are crucial in determining the progression of the healing process and DFU extension \cite{steed1996effect,rajbhandari1999digital}. In general, inflammation, ischemia, irregular pressure, and maceration particularly delay the healing process. In contrast, the healthy skin surrounding the DFU indicates the healing process. Color, texture, swelling, and tenderness are used to inspect the wound's health and healing process in clinical practice. Redness and inflammation indicate the infection in the wound area. The black color of the affected area is an indication of ischemia. Due to maceration, DFU looks white and soggy, while pressure changes the DFU appearance into white and dry. It is critical to recognize the affected area of the body, but it looks different in different skin shades. Lesions with a red or brown appearance on white skin may look black or purple on black or brown skin. Similarly, mild degrees of redness are hard to detect on dark skin.
+\newline\indent Chronic and acute wounds are challenging issues in healthcare system \cite{frykbergrobert2015challenges}. Wound care and treatment cause enormous costs for healthcare systems worldwide. Only the United States spends between ($28.1- 96.8$) billion US Dollars on wound care treatment \cite{sen2019human}. Unlike acute wounds, chronic wounds typically require more care and time in their healing process. This additional care and hospitalization cost billions of dollars annually in healthcare systems \cite{branski2009review}. The estimated costs of outpatient care (\$9.9 billion to \$ 35.8 billion) are substantially higher than the costs of inpatient care (\$5.0 billion to \$24.3 billion) \cite{nussbaum2018economic}. It is critical to measure the wound area to monitor the wound-healing process accurately and plan future interventions. In clinical practice, estimating wound length, width, and depth are typically used to measure the wound area. The length and width of the wound are measured using a ruler guide, and the depth is measured using Q-tips. However, manual measurements are time-consuming, prone to human errors, and may lead to ineffective wound treatment. In terms of DFU treatment, diabetes complications can prolong the healing process \cite{davis2018dysfunctional}. Regular measurement of the diabetic level and blood flow to the foot is required to monitor the ulcer's healing progress. Infection-related complications may also significantly prolong treatment and increase the chances of amputation \cite{chang2021strategy,glover20213d}. Prolonged treatment places significant financial strain on patients and healthcare systems \cite{edmonds2021current,lo2021clinical}. Furthermore, the recent pandemic \cite{pranata2021diabetes} and the estimated rapid rise of diabetes increased concerns about treatment approaches and planning \cite{sun2022idf}.
+\newline\indent In current practice, DFU specialists determine the severity of DFU through visual inception and manual measurement approaches. Furthermore, for the final treatment planning, several records and examinations are considered, including: 1) evaluation of the patient medical history; 2) a thorough examination of DFU by a wound or DFU specialist; 3) additional tests, including CT scans, MRIs, and X-rays, are considered helpful for developing a treatment plan \cite{edmonds2016diabetic}. In addition to these approaches, researchers are also working on automated approaches to address the challenges in detecting and monitoring DFU \cite{edmonds2006diabetic}. Improved and automated DFU delineation systems could support digital healthcare for the screening purposes of the DFU. Furthermore, advancements in digital health systems could aid in developing DFU monitoring systems \cite{2023internet}.
+	
+%------------------------related work---------------------------
+\section{Related Work}
+\label{Related Work}
+Over the past decade, information technology has assisted in developing computer-assisted healthcare systems, including wound care systems \cite{cassidy2021dfuc}. AI-based wound segmentation approaches include traditional computer vision and deep-learning based systems. The first type of approach integrates computer vision techniques with classical machine learning methods. In such methods, hand-crafted extracted features using computer vision algorithms are used to train traditional machine learning algorithms. However, earlier DFU research focused on designing new capturing tools and was initiated in 2015 \cite{yap2016computer}. Simultaneously, the captured images were analyzed using computer vision and machine learning algorithms for further research on DFU \cite{yap2018new, aldoulah2025swishres}.
+\newline\indent In earlier days, fewer computer-assisted methods were available for diabetic foot pathology assessment \cite{yap2018new,liu2015automatic}. Such as, Wang et al. \cite{wang2016area} used an SVM-based classification approach to divide the skin into DFU-affected and non-affected areas of the body. In the past, researchers used color and texture feature descriptors to classify the normal and abnormal patches of skin, DFU- affected regions, and other types of wounds. Song et al. \cite{armstrong1998validation} used 49 feature sets in their proposed approach, extracted from RGB and grayscale images. Ahmad et al. \cite{ahmad2018anxiety} proposed a probability map-guided segmentation approach based on the generated Red-Yellow-Black-White (RYKW) probability map. They used probability maps to supervise the segmentation process using optimal thresholding or region growing. Hettiarachchi et al. \cite{song2012automated} proposed a discrete dynamic contour algorithm to apply to the HSV color maps of the input image to calculate the wound area. Hani et al. \cite{hani2012haemoglobin} used k-means clustering for ulcer wound granulation tissue as a wound healing monitoring tool. Authors regarded the shrinkage of granulation areas as a step toward healing, whereas expansion is considered as the inverse. Wantanajittikul et al. \cite{wantanajittikul2012automatic} proposed a similar system to segment the burn wound in images. The input images were processed through Cr-Transformation and Luv-Transformation to highlight the wound area and remove the background. A pixel-wise Fuzzy C-mean Clustering (FCM) technique was employed to segment the transformed images. WSNET presented a global-local architecture that uses the entire image and its patches by leveraging domain adaptive pretraining to learn fine-grained attributes of heterogeneous wounds \cite{oota2023wsnet}.
+\newline\indent Clinical practitioners used these techniques for a long time to segment the irregular shapes of wounds and DFUs. However, change in the appearance of the affected skin on the different shades of skin force practitioners to abandon these approaches. Color complications of the surrounding skin also disrupt the segmentation performance of such approaches for treatment planning. The traditional techniques have at least one of the following drawbacks:
+\begin{itemize}
+	\item The use of hand-crafted features is influenced by illumination, skin pigmentation, image resolution, and camera properties.
+	\item Machine Learning models using hand-crafted features depend on manually-tuned parameters, which does not guarantee using hand-crafted features as an optimal solution.
+	\item The performances were generally evaluated by using a small dataset that is highly biased.
+\end{itemize}
+
+\indent However, semantic segmentation using advanced deep learning approaches offers detailed information on wounds. Meanwhile, deep learning approaches require more manually annotated data for training purposes. In addition, the preparation of manually pixel-wise labeled image data in the medical domain is exhausting and challenging. The success of deep learning in different computer vision tasks inspired researcher to use deep neuran networks to study DFU. Goyal et al. \cite{goyal2017fully} published the first article in 2017 on DFU's automated segmentation. They employed different Fully Convolutional Networks (FCN) architectures for the semantic segmentation of the wound areas and achieved a 79.4\% Dice score (DS). However, their proposed method performed poorly in segmenting minor and irregular wound boundaries from the body. Following their proposed work, Wang et al. \cite{wang2015unified} used vanilla FCN architecture for wound area segmentation. The authors used time-series data, a Gaussian process regression function to predict wound areas and healing progress. They achieved 64.2\% dice score as a segmentation accuracy. For DFU wound area segmentation, Liu et al. \cite{liu2015automatic} replaced the vanilla FCN decoder with skip connections and up-sampling layers. The authors refined the final layer output of the segmented area of the ulcer in the post-processing procedure. 
+\newline\indent On the other hand, various image processing techniques, including edge detection, clustering algorithms, and morphological operations, have been used in different color spaces as unsupervised methods to segment the wound regions from images \cite{yadav2013segmentation,castro2006analysis,chung2000segmenting}. Most unsupervised approaches needs manual parameters tuning, an impractical approach from a medical perspective. Besides the algorithm performance, most existing approaches have been trained and evaluated on relatively small datasets. Overall, existing approaches suffer from low performance, lack of testing on variety of datasets, high computation requirements and inability to segment tiny wounds. Furthermore, only transfer learning has been utilized and single stage of disease is targeted. In this context, a reliable automatic segmentation approach of the wound from the images could automate the measurement of the wound surface. Further, it could improve the electronic record for the patient care system.
+\newline\indent In this paper, we propose a diabetic foot ulcer segmentation model using Vision Transformer (DFUS-ViT), motivated by existing efforts to assist patients with acute and chronic wounds, especially diabetic foot ulcers. The model is designed to be lightweight and generalizable for real-time applications. The Vision Transformer serves as the encoder, providing a robust foundation for better performance. The encoder is followed by a Cascade Feature Enhancement Block (CFEB) consisting of four Receptive Field Blocks (RFBs) and three Local Feature Enhancement Modules (LFEMs). The CFEB refines features using channel attention and dilated convolution. The outputs of the CFEB are fed into the Cascade Feature Fusion Module (CFFM), which is scale-invariant and fuses different scales of feature maps to produce a refined prediction map. The key contributions of this study are the follows: 
+\begin{enumerate}	
+		
+	\item[$\bullet$] A cascade feature interaction approach (CFEB) is developed that aggregates and interacts with different scales features to improve the model generalization ability.
+	\item [$\bullet$] We proposed the Local Feature Enhancement Module (LFEM) to deal with the ambiguate boundary issues and camouflage properties of DFU.
+	\item[$\bullet$] A novel multi-level Cascade Feature Fusion Module (CFFM) is developed as a decoder aggregating multilevel features to grab the target gradually.
+	
+\end{enumerate}
+
+%----------------------------------------Proposed Method--------------------------------%
+%\begin{figure*}[h!]
+%	\includegraphics[width=\linewidth]{diagrams/maindiagram.pdf}
+%	\caption{The proposed architecture of Diabetic Foot Ulcer Segmentation using ViT (DFUS-ViT). }
+%	\label{fig:maindiagram}
+%\end{figure*}
+
+\section{Proposed Method}
+\label{Proposed Method}
+This section describes the proposed DFUS-ViT. DFUS-ViT is comprised of an encoder, Cascade Feature Enhancement Module (CEFM), and the Cascade Feature Fusion Module (CFFM) as a decoder. The following subsections describe in detail each module and overall architecture.
+
+\begin{figure*}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{diagrams/maindiagram.pdf}
+	\caption{The proposed architecture of Diabetic Foot Ulcer Segmentation using ViT (DFUS-ViT). }
+	\label{fig:maindiagram}
+\end{figure*}
+
+\subsubsection{The Proposed Architecture}
+The proposed model (in Fig. \ref{fig:maindiagram}) is composed of three key modules, including a PVT-V2 as an encoder, while a cascade feature enhancement block (CFEB) followed by a cascade feature fusion module (CFFM) as the decoder. The PVT is used as an encoder to extract multi-scale features with long-range dependencies from the input image. The CFEB enhances the high-level feature maps by suppressing the noise to locate the exact ulcer-affected areas. The transformer backbone \cite{wang2022pvt} extracts pyramid features $X_i \in R^{\frac{H}{2^{i+1}}\times \frac{W}{2^{i+1}}\times C_i}$ from the input source $I\in R^{H\times W\time3}$, where $C_i \in \{64,128,320,512\}, \forall i =\{1,2,3,4\}$. The CFFM aggregates these multilevel feature maps in a cascade manner which helps to locate the ulcer-affected area accurately using semantic cues. 
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.75\linewidth]{diagrams/rfbmodified.pdf}
+	\caption{Receptive Field Block (RFB): A component of Cascade Feature Enhancement Block (CFEB) in \ref{fig:maindiagram}. }
+	\label{fig:rfb}
+\end{figure}
+
+\subsection{ViT Encoder}
+It is well known that the quality of the decoder-predicted maps highly relies on the effectiveness of the encoder's feature map \cite{bhojanapalli2021understanding,xie2021segformer}. However, the encoder selection depends on the target problem, its implication, and the dataset. Using a lightweight pre-trained neural network architecture as an encoder module with better performance is a common trend in segmentation tasks. In this regard, transformers became the de facto standard for natural language processing and computer vision applications. In computer vision applications, the use of pre-trained transformers as encoders and part of transformers as a designing component of convolutional neural networks is a common practice. The use of vision transformers (ViT) as encoders for segmentation models yields excellent results compared to state-of-the-art pre-trained convolutional network encoders, as discussed in \cite{bhojanapalli2021understanding,xie2021segformer}. Inspired by this, we use the ViT as an encoder as the Diabetic foot ulcer images tend to contain smaller affected areas and significant noise, such as motion blur, rotation, and reflection due to various factors. We employ Pyramid Vision Transformer PVT-V2 \cite{wang2022pvt} as the encoder for the DFU segmentation architecture. The first layer of the adopted encoder provides the ulcer-affected area information, while the lower layers focus on the high-level features, such as boundary information.
+
+\begin{figure}[ht!]
+	\includegraphics[width=\linewidth]{diagrams/lfam.pdf}
+	\caption{Local Feature Enhancement Module (LFEM): A key element of Cascade Feature Enhancement Block (CFEB) in \ref{fig:maindiagram}. }
+	\label{fig:lfam}
+\end{figure}
+
+\subsubsection{Cascade Feature Enhancement Block (CFEB)}
+As mentioned above, the decoder predictions heavily depend on the encoder-extracted features \cite{bhojanapalli2021understanding}; however, refinement and aggregation of features at different-level play pivotal roles on the overall  perfomance of the model. In this context, dilated and factorized convolutions could effectively extract the most critical information in order to enhance prediction performance of the network. They suppress the noise and also reduce the deconvolution and up-sampling computation cost \cite{bergman2019factorized}. This characteristic favors the model for real-time applications as they require quick and precise information for in-the-moment decisions.
+\newline \indent For this reason, CFEB, as shown in Fig. \ref{fig:maindiagram}, is designed in the proposed approach to improve the model's generalization capabilities. The CFEB consists of four Receptive Field Blocks (RFB) (Fig \ref{fig:rfb}) and three Local Feature Enhancement Modules (LFEM) in Fig.\ref{fig:lfam}. RFB modules extracts multi-scale features maps, which are important for precise localization of boundaries, enhancing the model's ability to accurately delineate tumor regions. At the same time, the LFFM applies attention operation on the RFB features and refines them in a cascade approach from the bottom to the top layer. This way, the model learns to focus on the exact DFU-affected parts and accurately predicts the wound regions.
+
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{diagrams/cffm.pdf}
+	\caption{Scale-invariant cascade feature fusion module (CFFM) as shown in \ref{fig:maindiagram}. }
+	\label{fig:cfem}
+\end{figure}
+
+\subsubsection{Cascade Feature Fusion Module (CFFM)}
+Refinement and enhancement of encoder-extracted features is a common strategy to improve the decoder prediction performance. Similarly, an appropriate multilevel feature fusion adds an extra to the decoder's performance. To this end, we propose a Scale-invariant Cascade Feature Fusion Module (CFFM), as shown in Fig. \ref{fig:cfem}. CFFM collects semantic and spatial information from multilevel features using a cascade integration approach. These feature maps of different layers are further refined in a cascade manner and in ascending order from lower layer feature maps to the upper one in a stepwise manner. The feature maps of all three input layer are multiplied and concatenated with each other one by one. Subsequently, these features are refined through two convolution operation layers before the final prediction layer.
+
+%-------------------------------Experimental Setup---------------------------------------------------%
+\section{Experimental Setup}
+This section includes the details of datasets used, loss functions, and the implementation details of training the proposed model.
+\subsection{Datasets}
+To train and evaluate the proposed model, we used a blend of two datasets, including the \enquote{Advancing the Zenith of Healthcare (AZH) Wound and Vascular Center} (AZH-WVC) \cite{wang2020fully} and the \enquote{Foot Ulcer Segmentation Challenge} (FUSC) \cite{wang2022fuseg} datasets. The training dataset includes 1641 images, out of which 831 images belong to the training dataset of AZH-WVC and 810 images are from the training set of FUSC. The validation set consists of 332 images. For validation purposes, we extracted 200 images from the test set of AZH-WCV out of 278 images and 132 images from the validation set of FUSC out of 200 images. The test set consists of three datasets, including 78 images of AZH-WVC, 68 images from FUSC, and the training set of the Medetec dataset \cite{thomas_2014} with 152 images. The detail of these publicly available datasets is as follows:
+%----------------------------------Medetec dataset-------------------
+ \newline\textbf{Medetec dataset \cite{thomas_2014}:} Medetec dataset consists of 152 clinical images with corresponding segmentation masks of various categories of foot wounds. We used these images as completely unseen test datasets for the proposed approach.
+%-------------------------------Advancing the Zenith of Healthcare (AZH) Wound and Vascular Center (AZH-WVC)---------------------
+\newline\textbf{The Chronic wound dataset \cite{wang2020fully}:} AZH-WVC consists of 1109 ulcer-affected images from 889 patients. Each image has $512\times512$ pixels dimension. The dataset is divided into training and test sets with 832 and 278 images respectively.
+%-------------------------------Foot Ulcer Segmentation---------------------------
+\newline\textbf{FUSeg dataset \cite{wang2022fuseg}:} Foot Ulcer Segmentation (FUSeg) dataset consists of 1210 clinical images, wherein 200 are taken as test set. The challenge organizer kept the masks of these images private. The remaining 1010 images contain their corresponding ground truths, of which 810 are available as the training and 200 as the validation set. All images in this dataset have $512\times512$ pixels dimensions.
+\subsection{Loss Functions}
+Three loss functions including Structure Loss \cite{fan2020pranet}, Focal Loss \cite{lin2017focal}, and Hybrid-E-Loss \cite{fan2021cognitive} are employed to train the proposed model. The ablation section provides a deeper look into how different loss functions affect model performance. The weighted binary cross entropy loss and the weighted intersection over the union are combined to calculate the structure loss. Similarly, the Hybrid-E Loss function combines Structure Loss and Enhanced Alignment Loss to focus on object-level feature characterization.
+
+%-----------------------------------------------------------------------------table 2---------------------------- 
+%\begin{table*}[!h]
+%    \caption{Model performance comparison with MobileNetV2 + CCL \cite{wang2020fully}}
+%    \label{tab:table2}
+%    \resizebox{\linewidth}{!}{
+%        \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+%            \hline
+%            \textbf{Approach $\rightarrow$} & \multicolumn{2}{c|}{\textbf{Proposed (fcl)}} & \multicolumn{2}{c|}{\textbf{Proposed (scl)}} & \multicolumn{2}{c|}{\textbf{Proposed (hybl)$\star$}} & \multicolumn{2}{c|}{\textbf{Proposed (-rfb)}} & \multicolumn{2}{c|}{\textbf{Proposed (-cefm)}} & \multicolumn{2}{c|}{\textbf{Proposed (-cffm)}} & \multicolumn{2}{c|}{\textbf{MobileNetV2+CCL (processed)}} \\ \hline
+%
+%            \textbf{Metrics $\rightarrow$} & \textbf{IoU} & \textbf{Dice} & \textbf{IoU} & \textbf{Dice} & \textbf{IoU} & \textbf{Dice} & \textbf{IoU} & \textbf{Dice} & \textbf{IoU} & \textbf{Dice} & \textbf{IoU} & \textbf{Dice} & \textbf{IoU} & \textbf{Dice} \\ \hline
+%            \textbf{MedFUS} & 0.492 $\downarrow$ & 0.628 $\downarrow$ & 0.711 $\uparrow$ & 0.817 $\uparrow$ & \textbf{0.741} $\uparrow$ & \textbf{0.837} $\uparrow$ & 0.694 $\uparrow$ & 0.800 $\uparrow$ & 0.700 $\uparrow$ & 0.808 $\uparrow$ & 0.714 $\uparrow$ & 0.811 $\uparrow$ & 0.545 & 0.706 \\ \hline
+%            \textbf{CWD}    & 0.570 $\downarrow$ & 0.674 $\downarrow$ & 0.819 $\uparrow$ & 0.874 $\uparrow$ & \textbf{0.824} $\uparrow$ & \textbf{0.882} $\uparrow$ & 0.819 $\uparrow$ & 0.876 $\uparrow$ & 0.834 $\uparrow$ & 0.885 $\uparrow$ & 0.825 $\uparrow$ & 0.883 $\uparrow$ & 0.744 & 0.853 \\ \hline
+%        \end{tabular}
+%    }
+%\end{table*}
+
+%====================Evaluation Metrics==============================
+\subsection{Evaluation Metrics}
+Most of the existing approaches are data-specific; however, we trained the proposed model using mixed dataset to achieve model generalization and promising performance. The evaluation metrics include the Mean Absolute Error (MAE) \cite{perazzi2012saliency}, Weighted F-measure  $(F^w_\beta )$ \cite{margolin2014evaluate}, S-measure $(S_\alpha)$ \cite{fan2017structure}, E-measure $(E_\phi)$ \cite{fan2021cognitive}, IoU \cite{iou}, Dice \cite{dice}, Sensitivity (Se), and Specificity (Sp) \cite{sp}. MAE was proposed to calculate the average pixel-level relative error between the ground truth and normalized prediction. Weighted F-measure $(F^w_\beta )$ is an accuracy measure that considers both the weighted precision and recall. S-measure $(S_\alpha)$ is introduced to compute the structural similarities between the ground truth and the prediction map. E-measure $(E_\phi)$ is a method for assessing overall and local accuracy in Camouflaged Object Detection (COD). The Dice Similarity Coefficient (DSC), also known as the Dice Coefficient (DC), and the Intersection over union (IoU) are statistical tools used to compare similarities between the ground truth and prediction map. In classification and segmentation problems, sensitivity, also known as recall, is used to determine the probability of actual positives, whereas specificity determines the probability of actual negatives.
+
+\subsection{Implementation Details}
+The proposed model is trained on  $100$ epochs using the Adam optimizer and a batch size of 4 with a learning rate of $10^{-4}$. Images are resized to 256×256 and employed a multi-scale training strategy with scaling factors of {0.75, 1, 1.25} instead of data augmentation. We set a gradient clipping of 0.5 and a decay rate of 0.1 to avoid the issue of local minima. The proposed model is implemented using PyTorch and trained using a single Pascal Titan X GPU.
+
+%\section{Performance Comparison}
+\section{Results and Discussion}
+We compare the proposed method with various state-of-the-art approaches, including SRU-Net \cite{aldoulah2025swishres}, VGG16 \cite{simonyan2014very}, SegNet \cite{badrinarayanan2017segnet}, UNet\cite{ronneberger2015u}, MaskRCNN \cite{he2017mask}, MobileNetV2 \cite{sandler2018mobilenetv2}, MobileNetV2+CCL \cite{wang2020fully}, LinkNet \cite{chaurasia2017linknet}, and UNet \cite{ronneberger2015u} with EfficientNetB1 \cite{tan2019efficientnet}, and EfficientNetB2 \cite{tan2019efficientnet} respectively as a backbone, and with their ensemble model. For a fair comparison, the quantitative results of VGG16, SegNet, UNet, MaskRCNN, MobileNetV2, and MobileNetV2+CCl are taken from \cite{wang2020fully} while the remaining are from \cite{mahbod2021automatic}. To check the performance comparison of the proposed approach on different datasets against existing systems, we extracted the results of MobileNetV2+CCL using their provided trained model.
+
+%-----------------------------------------------------------------------------table 1--------------------------------------
+\begin{table}[H]
+    \centering
+    \caption{Quantitative comparison of proposed (DFUS-ViT) with state-of-the-art existing approaches using FUSeg dataset.}
+    \label{tab:table1}
+    \resizebox{\linewidth}{!}{%
+        \begin{tabular}{|l|c|c|c|c|}
+            \hline
+            \textbf{Method} & \textbf{S/Recall (\%)} & \textbf{IoU (\%)} & \textbf{Dice (\%)} & \textbf{Post-processing} \\ \hline
+            VGG16 \cite{wang2020fully} & 78.35 & n/a & 81.03 & \checkmark \\ \hline
+            SegNet \cite{wang2020fully} & 86.49 & n/a & 85.05 & \checkmark \\ \hline
+            U-Net \cite{wang2020fully} & 91.29 & n/a & 90.15 & \checkmark \\ \hline
+            Mask-RCNN \cite{wang2020fully} & 86.40 & n/a & 90.20 & \checkmark \\ \hline
+            MobileNetV2 \cite{wang2020fully} & 89.76 & n/a & 90.30 & \checkmark \\ \hline
+            MobileNetV2+CCL \cite{wang2020fully} & 89.97 & n/a & 90.47 & \checkmark \\ \hline
+            LinkNet-EffB1 \cite{mahbod2021automatic} & 91.33 & 85.35 & 92.09 & \checkmark \\ \hline
+            U-Net-EffB2 \cite{mahbod2021automatic} & 91.57 & 85.01 & 91.90 & \checkmark \\ \hline
+            SRU-Net \cite{aldoulah2025swishres} & 91.35 & 84.86 & 91.81 & \checkmark \\ \hline
+	Ensemble \cite{mahbod2021automatic} & 91.80 & 85.51 & 92.07 & \checkmark \\ \hline
+            \textbf{Proposed Method} & \textbf{98.53}$\uparrow$ & \textbf{86.49}$\uparrow$ & \textbf{92.76}$\uparrow$ & \checkmark \\ \hline
+        \end{tabular}%
+    }
+\end{table}
+
+%-----------------------------------------------------table2-----------------------------
+\begin{table*}[!h]
+    \caption{Model performance comparison with MobileNetV2 + CCL \cite{wang2020fully}}
+    \label{tab:table2}
+    \centering
+\resizebox{\linewidth}{!}{
+    \begin{tabular}{|l|c|c|c|c|c|c|c|c|}
+        \hline
+        \textbf{Approach $\rightarrow$}	 & \multicolumn{2}{c|}{\textbf{Proposed (fcl)}}	 & \multicolumn{2}{c|}{\textbf{Proposed (scl)}}	 & \multicolumn{2}{c|}{\textbf{Proposed (hybl)$\star$}} 	& \multicolumn{2}{c|}{\textbf{Proposed (-cffm)}} \\ \hline
+        \textbf{Metrics $\rightarrow$}	 & \textbf{IoU} & \textbf{Dice}				 & \textbf{IoU} & \textbf{Dice}				 & \textbf{IoU} & \textbf{Dice} 					& \textbf{IoU} & \textbf{Dice} \\ \hline 
+        \textbf{MedFUS}			 & 0.492 $\downarrow$ & 0.628 $\downarrow$ 	& 0.711 $\uparrow$ 					& 0.817 $\uparrow$ & \textbf{0.741} $\uparrow$ & \textbf{0.837} $\uparrow$ 	& 0.714 $\uparrow$ & 0.811 $\uparrow$ \\ \hline 
+        \textbf{CWD} 			& 0.570 $\downarrow$ & 0.674 $\downarrow$ 	& 0.819 $\uparrow$ 					& 0.874 $\uparrow$ & \textbf{0.824} $\uparrow$ & \textbf{0.882} $\uparrow$ 	& 0.825 $\uparrow$ & 0.883 $\uparrow$ \\ \hline 
+    \end{tabular}}
+
+\resizebox{\linewidth}{!}{
+    \begin{tabular}{|l|c|c|c|c|c|c|}
+        \hline
+        \textbf{Approach $\rightarrow$}	 & \multicolumn{2}{c|}{\textbf{Proposed (-rfb)}} 	& \multicolumn{2}{c|}{\textbf{Proposed (-cefm)}}		 & \multicolumn{2}{c|}{\textbf{MobileNetV2+CCL}} \\ \hline
+        \textbf{Metrics $\rightarrow$}	 & \textbf{IoU} & \textbf{Dice}				 & \textbf{IoU} & \textbf{Dice}					 & \textbf{IoU} & \textbf{Dice} \\ \hline
+        \textbf{MedFUS} 			& 0.694 $\uparrow$ & 0.800 $\uparrow$ 		& 0.700 $\uparrow$ & 0.808 $\uparrow$ 			& 0.545 & 0.706 \\ \hline
+        \textbf{CWD} 			& 0.819 $\uparrow$ & 0.876 $\uparrow$		 & 0.834 $\uparrow$ & 0.885 $\uparrow$ 			& 0.744 & 0.853 \\ \hline
+    \end{tabular}}
+\end{table*}
+%====================Quantitative Evaluation==============================
+\subsection{Quantitative Evaluation}
+Table \ref{tab:table1} describes the quantitative comparison of the proposed approach against the method mentioned earlier on the FUSeg dataset. The proposed method presented a significant improvement in Sensitivity, IoU, and Dice scores. The resulting values of the proposed approach are reported from the raw and post-processed prediction maps; however, the results of the existing methods are reported from their post-processed prediction maps. To extract the results from post-processed prediction maps, we adopted the post-processing code from \cite{wang2020fully} for meaningful comparison purposes. To examine the generalization ability of the model, we compared the performance of the proposed method with MobileNetV2 + CCL \cite{wang2020fully}. We obtained the MobileNetV2 + CCL \cite{wang2020fully} results on Chronic Wound Segmentation and Metedetc Dataset using the available trained model. Table \ref{tab:table2} compares the findings of the experiments conducted on MobileNetV2+CCL and the proposed approach. Experiments with all different setups/configurations outperformed MobileNetV2+CCL \cite{wang2020fully}, while experiments with the proposed method trained using focal loss presented minor(lagging) performance. \enquote{Proposed (fcl, stl, and hybl)} in Table \ref{tab:table2} presents the model training using loss functions such as focal loss (fcl), structure loss (stl) and hybrid-e-loss (hybl), respectively. In the same manner, \enquote{Proposed (- rfb)}, \enquote{Proposed (-lfam)}, and \enquote{Proposed (-cffm)} denotes the absence of modules, including RFB, LFEM, and CFFM, respectively. In Table \ref{tab:table2}, we extracted the MobileNetV2+CLL \cite{wang2020fully} results from the post-processed prediction maps instead of raw predictions. In Table \ref{tab:table2}, the asterisk ($\star$) represents the selected setting of the proposed method for overall performance comparison throughout the article.The $\downarrow$ denotes the model's setting with lower performance compared to the MobileNetv2+CCL, while the $\uparrow$ represents the performance improvements.
+
+
+%-----------------------------------------------------Figure--------------------------
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{diagrams/fig5.pdf}
+	\caption{The proposed (DFUS-ViT) qualitative comparison with MobileNetV2-FCCL. In the top row, original images are presented as available from the datasets (with black padding) }
+	\label{fig:sota}
+\end{figure}
+
+\subsection{Qualitative Evaluation}
+Fig.\ref{fig:sota}. depicts the qualitative performance comparison of the proposed approach and the MobileNetV2 + CCL \cite{wang2020fully}. We extracted the prediction maps from the selected test images of the chronic wound and Medetec datasets \cite{thomas_2014} illustrated in the dataset section. The \enquote{Raw Pred} and \enquote{Processed Pred} indicates the raw and post-processed prediction maps of MobileNetV2+CCL \cite{wang2020fully}. Table \ref{tab:table2} shows that the quantitative evaluations of the MobileNetV2+CCL \cite{wang2020fully} extracted from the post-processed raw prediction maps are inferior than the proposed approach. In Fig.\ref{fig:sota}., the raw prediction maps further highlight the poor performance and generalization ability of the MobileNetV2 + CCL \cite{wang2020fully}. These qualitative and quantitative comparisons demonstrate the proposed model's outstanding performance and generalization on different datasets.
+%-----------------------------------------------------Figure-----------------
+\begin{figure*}[h!]
+	\includegraphics[width=\linewidth]{diagrams/fig6.pdf}
+	\caption{DFUS-ViT qualitative performance visualization based on the used loss function for training purposes.}
+	\label{fig:losscmpdiagram}
+\end{figure*}
+
+%--------------------------------------------Table---------------------------------------------
+	\begin{table}[H]
+	    \caption{Model performance comparison using different loss functions (Study 1).}
+	    \centering
+	\label{tab:losstable1}
+	    \resizebox{\linewidth}{!}{%
+	    \begin{tabular}{|l|l|c|c|c|c|c|c|c|c|c|}
+	        \hline
+	        Loss Function & Data & $(S_\alpha )$ & $(F^w_\beta )$ & MAE & adp $(E_\phi )$ & mean$(E_\phi )$ & max$(E_\phi )$ & adp$(F_\beta )$ & mean$(F_\beta )$ & max$(F_\beta )$ \\ \hline
+	        \multirow{3}{*}{Focal Loss} 
+	        & FUSC     & 0.570 & 0.096 & 0.082  & 0.770 & 0.776 & 0.870 & 0.512 & 0.558 & 0.646 \\ \cline{2-11} 
+	        & CWD      & 0.660 & 0.254 & 0.088  & 0.885 & 0.746 & 0.829 & 0.705 & 0.627 & 0.703 \\ \cline{2-11} 
+	        & MedFUS   & 0.660 & 0.325 & 0.125  & 0.823 & 0.706 & 0.844 & 0.681 & 0.594 & 0.672 \\ \hline
+	        \multirow{3}{*}{Structure Loss} 
+	        & FUSC     & \underline{0.937} & 0.888 & \underline{0.001} & 0.967 & \underline{0.976} & \textbf{0.982} & 0.852 & 0.880 & \underline{0.902} \\ \cline{2-11} 
+	        & CWD      & \textbf{0.943} & 0.874 & \textbf{0.004}  & 0.969 & 0.971 & \textbf{0.984} & 0.853 & 0.870 & 0.885 \\ \cline{2-11} 
+	        & MedFUS   & 0.806 & 0.775 & 0.042  & 0.886 & 0.859 & 0.927 & 0.855 & 0.834 & 0.860 \\ \hline
+	        \multirow{3}{*}{Hybrid-E-Loss}  
+	        & FUSC     & \underline{0.937} & \textbf{0.891} & \underline{0.001} & \textbf{0.974} & \underline{0.976} & 0.979 & \textbf{0.869} & \textbf{0.891} & \underline{0.902} \\ \cline{2-11} 
+	        & CWD      & 0.932 & 0.884 & 0.007  & \textbf{0.974} & 0.966 & 0.972 & \textbf{0.884} & \textbf{0.890} & \textbf{0.896} \\ \cline{2-11} 
+	        & MedFUS   & \textbf{0.814} & \textbf{0.789} & \textbf{0.039}  & \textbf{0.896} & \textbf{0.870} & \textbf{0.932} & \textbf{0.866} & \textbf{0.846} & \textbf{0.876} \\ \hline
+	    \end{tabular}%
+	    }
+	\end{table}
+%--------------------------------------------Table---------------------------------------------
+\begin{table*}[!h]
+	\caption{Model performance comparison based on used loss functions for training purpose (Study 2).}
+	\label{tab:losstable2}
+	\resizebox{\linewidth}{!}{\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
+			\hline
+			Approach                        & Dataset & meanIoU & maxIoU & meanDice & MaxDice & meanSen & maxSen & meanSpe & maxSpe \\ \hline
+			\multirow{3}{*}{Focal Loss}     & FUSC    &0.457    &0.524   &0.574     &0.650    & 0.783   & \underline{0.985}  &0.907    &0.983   \\ \cline{2-10} 
+			& CWD     &0.474    &0.570   &0.577     &0.674    & 0.608   & \underline{0.961}  &0.868    &0.934   \\ \cline{2-10}
+			& MedFUS  &0.391    &0.492   &0.518     &0.628    & 0.496   &\underline{1.00}   &0.910   &0.987   \\ \hline
+			\multirow{3}{*}{Structure Loss} & FUSC    &\textbf{0.819}    &\textbf{0.826 }  &\textbf{0.887 }    &\textbf{0.893}    &\textbf{ 0.920}   & \underline{0.985}  &0.980    &\underline{0.985}   \\ \cline{2-10} 
+			& CWD     &\textbf{0.813}    &0.819   &\underline{0.869}     &0.874    &\textbf{ 0.879}   & \underline{0.961}  &0.943    &0.958   \\ \cline{2-10}
+			& MedFUS  &0.636    &0.711   &0.750    &0.817   &0.654    &\underline{1.00 }  &\underline{0.994}   &\underline{0.999}  \\ \hline
+			\multirow{3}{*}{Hybrid Loss}    & FUSC    &0.815    &0.823   &0.884     &0.891    & 0.890   & \underline{0.985}  &\textbf{0.981 }   &\underline{0.985}   \\ \cline{2-10} 
+			& CWD     &0.808    &\textbf{0.824 }  &\underline{0.869}     &\textbf{0.882 }   & 0.847   & \underline{0.961}  &\textbf{0.956 }   &\textbf{0.961}   \\ \cline{2-10}
+			& MedFUS  &\textbf{0.648}    &\textbf{0.741 }  & \textbf{0.763}   &\textbf{0.837 } & \textbf{0.664}   &\underline{1.00}   &\underline{0.994}   &\underline{0.999}  \\ \hline
+	\end{tabular}}
+\end{table*}
+%--------------------------------------------Table---------------------------------------------
+\begin{table*}[!h]
+	\caption{Model performance analysis based on the effectiveness of different proposed modules (Study 1).}
+	\label{tab:measuretable1}
+	\resizebox{\linewidth}{!}{\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|l|}
+			\hline
+			ViT-UNet&Modified RFB &LFEM&CFFM & Data &  $(S_\alpha )$ &  $(F^w_\beta )$ & MAE & adp $(E_\phi )$ & mean$(E_\phi )$& max$(E_\phi )$ & adp$(F_\beta )$ & mean$(F_\beta )$ & max$(F_\beta )$ \\ \hline
+			%ViT-UNET
+			\checkmark&&&& FUSC & 0.918&0.850&0.002&0.955 &0.961&0.965& 0.826&0.851 &0.869 \\ \cline{5-14} 
+			&&&& CWD  & 0.837&0.766&0.007&0.917&0.878&0.927&0.822&0.789&0.824 \\ \cline{5-14}
+			&&&& MedFUS  & 0.778&0.746&0.047&0.851 &0.827&0.878&0.824&0.802&0.837 \\ \hline
+			%ViT-UNET+RFB
+			\checkmark&\checkmark&&& FUSC & 0.927    &0.874 &     \underline{0.001}& 0.970 &0.973   &0.977  & 0.852&0.870 &0.888 \\ \cline{5-14} 
+			&&&& CWD  & 0.939    &0.879 &\underline{0.003}&\textbf{ 0.985} &0.970   &0.981  & 0.876&0.877 &0.885 \\ \cline{5-14}
+			&&&& MedFUS  & 0.800   &0.766 &0.044&0.888 &0.855   &0.926  &0.852 &0.829 &0.860 \\ \hline
+			%ViT-UNET+LFEM (ACFM)
+			\checkmark&&\checkmark&& FUSC & 0.905&0.815&0.002& 0.931&0.957&0.966& 0.753&0.820&0.848 \\ \cline{5-14} 
+			&&&& CWD  & 0.766&0.638&0.014&0.879&0.807&0.892&0.744&0.692&0.740 \\ \cline{5-14}
+			&&&& MedFUS  & 0.772&0.668&0.054&0.854&0.806&0.886&0.820 &0.781 &0.826 \\ \hline
+			%ViT-UNET+CFFM(cfm)
+			\checkmark&&&\checkmark& FUSC & 0.911&0.843&0.002&0.956&0.960&0.966& 0.822&0.841 &0.860 \\ \cline{5-14} 
+			&&&& CWD  & 0.899&0.809 &0.008&0.946 &0.918&0.942& 0.838&0.824&0.834 \\ \cline{5-14}
+			&&&& MedFUS  & 0.790&0.736 &0.048&0.855 &0.830&0.877 &0.813 &0.793 &0.812 \\ \hline
+			
+			\checkmark&\checkmark&&  \checkmark & FUSC & 0.927    &0.874 &     \underline{0.001}& 0.970 &0.973   &0.977  & 0.852&0.870 &0.888 \\ \cline{5-14} 
+			&&&& CWD  & 0.939    &0.879 &\underline{0.003}&\textbf{ 0.985} &0.970   &0.981  & 0.876&0.877 &0.885 \\ \cline{5-14}
+			&&&& MedFUS  & 0.800   &0.766 &0.044&0.888 &0.855   &0.926  &0.852 &0.829 &0.860 \\ \hline
+			
+			\checkmark&&\checkmark&\checkmark& FUSC & 0.933    &0.882      &\underline{0.001}& 0.967 &0.973   &0.977  & 0.851&0.881 &0.899 \\ \cline{5-14} 
+	    	&&&	& CWD  & 0.943    & \underline{0.884}     &\underline{0.003}& 0.983 &\textbf{0.978}   & \textbf{0.984} & 0.876&0.885 &0.893 \\ \cline{5-14}
+			&&&& MedFUS  &0.804    &0.766 &0.042&0.884 &0.853   &0.915  &0.845 &0.821 &0.847 \\ \hline
+			
+			\checkmark&\checkmark&\checkmark& & FUSC & 0.930    &0.874      &\underline{0.001}& 0.957 &0.968   &0.974  & 0.836&0.868 &0.892 \\ \cline{5-14} 
+			&&&& CWD  & \textbf{0.953}    &\underline{0.884} &\underline{0.003}& 0.976 &0.975   &0.978  & 0.866&0.879 &0.893 \\ \cline{5-14}
+			&&&& MedFUS  &\textbf{0.821}    &\textbf{0.793} &\textbf{0.037}&0.895 &\textbf{0.874 }  &0.905  &0.862 &\textbf{0.848} &0.858 \\ \hline
+			
+			\checkmark&\checkmark&\checkmark&\checkmark & FUSC & \textbf{0.937 }   &\textbf{0.891}&\underline{0.001}&\textbf{ 0.974 }&\textbf{0.976 }  &\textbf{0.979}& \textbf{0.869}&\textbf{0.891} &\textbf{0.902} \\ \cline{5-14} 
+			&&&& CWD  & 0.932    &\underline{0.884} &0.007& 0.974 &0.966   &0.972  & \textbf{0.884}&\textbf{0.890} &\textbf{0.896} \\ \cline{5-14}
+			&&&& MedFUS  &0.814&0.789 &0.039   &\textbf{0.896 } &0.870 &\textbf{0.932}  &\textbf{0.866}  &0.846 &\textbf{0.876}\\ \hline
+	\end{tabular}}
+\end{table*}
+%--------------------------------------------Table---------------------------------------------
+\begin{table*}[!h]
+	\caption{Model performance analysis based on the effectiveness of different proposed modules (Study 2).}
+	\label{tab:measuretable2}
+	\resizebox{\linewidth}{!}{\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|}
+			\hline
+			ViT-UNet&Modified RFB &LFEM&CFFM & Dataset & meanIoU & maxIoU & meanDice & MaxDice & meanSen & maxSen & meanSpe & maxSpe \\ \hline
+			%%ViTUNET
+			\checkmark&&&  & FUSC    &0.774    &0.780   &0.855     &0.860 & 0.893   & 0.983  &0.980    &0.984   \\ \cline{5-13} 
+			&&&& CWD     &0.650    &0.713   &0.735&0.791    & 0.672   & \underline{0.961}  &\underline{0.943}    &0.948   \\ \cline{5-13}
+			&&&& MedFUS    & 0.602  &0.671   &0.715   &0.774    &0.616    &\underline{1.00}   &0.994  &\underline{0.999}  \\ \hline
+			
+			%%ViTUNET+RFB
+			\checkmark&\checkmark&&  & FUSC &0.772&0.778&0.854 &0.859& 0.890 & \underline{0.985}  &0.980    &0.984   \\ \cline{5-13} 
+			&&&& CWD     &0.658&0.728&0.741&0.800 & 0.676 & \underline{0.961}  &\underline{0.945}    &0.960   \\ \cline{5-13}
+			&&&& MedFUS    & 0.581&0.640&0.692&0.746&0.591&\underline{1.00}   &0.994  &\underline{0.999}  \\ \hline
+			%%ViTUNET+LFEM
+			\checkmark&&\checkmark& & FUSC&0.737&0.750&0.829&0.839& 0.878 & \underline{0.985}  &0.979&0.985   \\ \cline{5-13} 
+			&&&& CWD     &0.528&0.598&0.626&0.697 & 0.552& \underline{0.961}  &\underline{0.907}    &0.947   \\ \cline{5-13}
+			&&&& MedFUS    & 0.569&0.660&0.688&0.770&0.588 &\underline{1.00}   &0.991  &\underline{0.999}  \\ \hline
+			%%ViTUNET+CFFM
+			\checkmark&&& \checkmark & FUSC&0.765&0.770&0.848&0.853& 0.893   & \underline{0.985}  &0.980    &0.984   \\ \cline{5-13} 
+			&&&& CWD     &0.716&0.753&0.786&0.817& 0.741& \underline{0.961}  &\underline{0.908}    &0.943   \\ \cline{5-13}
+			&&&& MedFUS    & 0.610&0.670&0.716&0.769&0.627&\underline{1.00}&0.988  &\underline{0.997}  \\ \hline
+			
+			\checkmark&\checkmark&&  \checkmark & FUSC    &0.798    &0.802   &0.873     &0.877    & 0.899   & \underline{0.985}  &0.980    &0.984   \\ \cline{5-13} 
+			&&&& CWD     &0.812    &0.819   &0.868     &0.876    & 0.864   & \underline{0.961}  &\underline{0.956}    &0.960   \\ \cline{5-13}
+			&&&& MedFUS    & 0.620  &0.700   &0.741   &0.808    &0.639    &\underline{1.00}   &0.993  &\underline{0.999}  \\ \hline
+			
+			\checkmark&&\checkmark&\checkmark  & FUSC    &0.808    &0.814   &0.879     &0.885    & 0.898   & \underline{0.985}  &0.980    &\underline{0.985}   \\ \cline{5-13} 
+			&&&& CWD     &0.814    &0.825   &0.874     &0.883    & 0.867   & \underline{0.961}  &\underline{0.956}    &\underline{0.961}   \\ \cline{5-13}
+			&&&& MedFUS    &0.632   &0.714   &0.743   &0.811    &0.651    &1.00   &0.993 & 0.999 \\ \hline
+			
+			\checkmark&\checkmark&\checkmark& & FUSC    &0.804    &0.811   &0.876     &0.882    &\textbf{ 0.914}   & \underline{0.985}  &0.980    &0.984   \\ \cline{5-13} 
+			&&&& CWD     &\textbf{0.827}    &\textbf{0.834}   &\textbf{0.879}     &\textbf{0.885 }   & \textbf{0.892}   & 0.961  &\underline{0.956}    &\underline{0.961}   \\ \cline{5-13}
+			&&&& MedFUS    & \textbf{0.662}  & 0.694  &\textbf{0.773}   &0.800    &\textbf{0.684}    &\underline{1.00}   &0.993  &\underline{0.999}  \\ \hline
+			
+			\checkmark&\checkmark&\checkmark&\checkmark  & FUSC    &\textbf{0.815}    &\textbf{0.823}   &\textbf{0.884}     &\textbf{0.891}    & 0.890   & \underline{0.985}  &\textbf{0.981}    &\underline{0.985}   \\ \cline{5-13} 
+			&&&& CWD     &0.808    &0.824   &0.869     &0.882    & 0.847   & \underline{0.961}  &\underline{0.956}    &\underline{0.961}   \\ \cline{5-13}
+			&&&& MedFUS    &0.648    &\textbf{0.741}   & 0.763   &\textbf{0.837}  & 0.664   &1.00   &\textbf{0.994}    &0.999 \\ \hline
+	\end{tabular}}
+\end{table*}
+%----------------------------------------------------------------ablation study-------------------------
+\subsection{Ablation Study}
+In order to verify the validity of each key module and the choice of a better training loss function, we conducted different ablation experiments on three different datasets. Three of the conducted studies analyze the effectiveness of loss function for training, while the others study investigates the viability of each key module and their combination. We examine all the experiments using two sets of metrics named (\enquote{Study 1} and \enquote{Study 2}) for quantitative evaluation. Table \ref{tab:losstable1},\ref{tab:losstable2}, \ref{tab:measuretable1}, and \ref{tab:measuretable2} depicts the conducted experiments’ performance evaluations. On the other hand, Fig. \ref{fig:losscmpdiagram} presents the qualitative performance analysis of the proposed model based on the used loss function for training purposes.
+\newline\indent Typically, Focal loss is used as the best segmentation loss, while this study (in Table \ref{tab:losstable1},\ref{tab:losstable2}) shows that the performance of focal loss is substandard for irregular shapes. Structural loss and Hybrid-e-loss perform best in segmenting irregular shapes. We use the Hybrid-e-loss trained version of the proposed model for comparison against existing approaches. Tables \ref{tab:measuretable1} and \ref{tab:measuretable2} show the quantitative performance analysis of the proposed approach based on selected modules. These quantitative results highlight the importance of the selection of each module and their combination in the proposed method. LFEM and RFB from the feature enhancement block significantly contribute to the model’s performance, as depicted in Tables \ref{tab:measuretable1} and \ref{tab:measuretable2}. However, the CFFM supports these modules to improve the model’s generalization and overall segmentation accuracy. The best performance in all of the above tables is in boldface, while underlined numbers represent the equivalent performances. 
+
+%---------------conclusion-----------------------------------
+\section{Conclusion}
+Computer-aided segmentation approaches are considered an effective alternative to manual analysis of foot ulcers. Computer-assisted methods can be used to diagnose and track the treatment procedure by computing the wound area. This paper presents a lightweight, deep learning-based approach for segmenting foot ulcer-affected areas from different clinical image datasets. The proposed method incorporates a ViT encoder and uses mixed training data for improved segmentation performance. Segmentation results from raw prediction maps on three benchmark datasets demonstrate the superior performance of our proposed approach. Moreover, the fewer trainable parameters are extremely in favor of applying the proposed model in practical applications.
+
+
+	
+\bibliography{egbib}
+
+
+\end{document}
