@@ -1,34 +1,37 @@
-# C2FNet: Context-aware Cross-level Fusion Network for Camouflaged Object Detection (IJCAI 2021)
+# DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer
 
 > **Authors:** 
-> Yujia Sun,
-> Geng Chen,
-> Tao Zhou,
-> Yi Zhang,
-> and Nian Liu.
+> Muhammad Zaka-Ud-Din,
+> Muhammad Usman,
+> and Jacek Ruminski.
 
 ## 1. Preface
 
-- This repository provides code for "_**Context-aware Cross-level Fusion Network for Camouflaged Object Detection**_" IJCAI-2021. [![Arxiv Page](https://img.shields.io/badge/Arxiv-2105.12555-red?style=flat-square)](https://arxiv.org/abs/2105.12555)
+- This repository provides code for "_**DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer**_" Biocybernetics and Biomedical Engineering-2025. [![DFUS-ViT]([https://img.shields.io/badge/Arxiv-2105.12555-red?style=flat-square](https://img.shields.io/website-up-down-green-red/http/monip.org.svg ))](link)
 
 ## 2. Overview
 
 ### 2.1. Introduction
-Camouflaged object detection (COD) is a challenging task due to the low boundary contrast between the object and its surroundings. In addition, the appearance of camouflaged objects varies significantly, e.g., object size and shape, aggravating the difficulties of accurate COD. In this paper, we propose a novel Context-aware Cross-level Fusion Network (C2FNet) to address the challenging COD task.Specifically, we propose an Attention-induced Cross-level Fusion Module (ACFM) to integrate the multi-level features with informative attention coefficients. The fused features are then fed to the proposed Dual-branch Global Context Module (DGCM), which yields multi-scale feature representations for exploiting rich global context information. In C2FNet, the two modules are conducted on high-level features using a cascaded manner. Extensive experiments on three widely used benchmark datasets demonstrate that our C2FNet is an effective COD model and outperforms state-of-the-art models remarkably. 
+Chronic wounds significantly impact patients’ lives and place a huge burden on healthcare systems. The early and accurate segmentation of wound areas is crucial for monitoring healing progress, yet it remains challenging due to factors like hazy boundaries, varied coloration, and irregular shapes. To address these issues, the key contributions of our work are as follows:
+1. A cascade feature interaction approach (CFEB) is developed to aggregate and integrate varying scale features to improve the model generalization ability. 
+2. We propose the local feature enhancement module (LFEM) to deal with the ambiguous boundary issues and camouflage properties of diabetic foot ulcers (DFU).
+3. A novel multi-level Cascade Feature Fusion Module (CFFM) is developed as a decoder that aggregates multilevel features to gradually capture the targeted features.
+   
+Our approach is validated on two publicly available wound segmentation datasets (AZH-WVC and FUSeg), achieving dice scores of 88.2% and 92.76%, respectively. We further perform cross-dataset validation to demonstrate the model's generalization ability. The experimental results highlight that DFUS-ViT exhibits significant advancements in accuracy and generalization, making it a promising approach for automated wound assessment.
 
 ### 2.2. Framework Overview
 
 <p align="center">
-    <img src="Images/net.png"/> <br />
+    <img src="figures/figure1.jpg"/> <br />
     <em> 
-    Figure 1: The overall architecture of the proposed model, which consists of two key components, i.e., attention-induced cross-level fusion module and dual-branch global context module. See § 3 in the paper for details.
+    Figure 1: The overall architecture of the proposed model, which consists of two key components, i.e., Encoder and Decoder.
     </em>
 </p>
 
 ### 2.3. Qualitative Results
 
 <p align="center">
-    <img src="Images/results.png"/> <br />
+    <img src="figures/figure5.jpg"/> <br />
     <em> 
     Figure 2: Qualitative Results.
     </em>
@@ -39,26 +42,20 @@ Camouflaged object detection (COD) is a challenging task due to the low boundary
 ### 3.1. Training/Testing
 
 The training and testing experiments are conducted using [PyTorch](https://github.com/pytorch/pytorch) with 
-a single NVIDIA Tesla P40 GPU of 24 GB Memory.
+a single NVIDIA RTX4090 GPU of 16 GB Memory.
 
 1. Configuring your environment (Prerequisites):
     
-    + Creating a virtual environment in terminal: `conda create -n C2FNet python=3.6`.
+    + Creating a virtual environment in terminal: `conda create -n dfus python=3.6`.
     
     + Installing necessary packages: `pip install -r requirements.txt`.
 
 1. Downloading necessary data:
 
-    + downloading testing dataset and move it into `./data/TestDataset/`, 
-    which can be found in this [download link (Google Drive)](https://drive.google.com/file/d/1SLRB5Wg1Hdy7CQ74s3mTQ3ChhjFRSFdZ/view?usp=sharing).
+    + downloading training and testing datasets from the following links: 
+	* [`FUSeg dataset`](https://github.com/uwm-bigdata/wound-segmentation/tree/master/data/Foot%20Ulcer%20Segmentation%20Challenge)
+	* [`The Chronic wound dataset (AZH)`](https://github.com/uwm-bigdata/wound-segmentation/tree/master/data/wound_dataset)
     
-    + downloading training dataset and move it into `./data/TrainDataset/`, 
-    which can be found in this [download link (Google Drive)](https://drive.google.com/file/d/1Kifp7I0n9dlWKXXNIbN7kgyokoRY4Yz7/view?usp=sharing).
-    
-    + downloading pretrained weights and move it into `./checkpoints/C2FNet40/C2FNet-39.pth`, 
-    which can be found in this [download link (Google Drive)](https://drive.google.com/file/d/1zG7FjmYwpSagjXG3yhLUA5sjlvEvQvJl/view?usp=sharing).
-    
-    + downloading Res2Net weights and move it into `./models/res2net50_v1b_26w_4s-3cf99910.pth`[download link (Google Drive)](https://drive.google.com/file/d/1_1N-cx1UpRQo7Ybsjno1PAg4KE1T9e5J/view?usp=sharing).
 
 1. Training Configuration:
 
@@ -88,12 +85,12 @@ Just run `eval.py` to evaluate the trained model.
 
 Please cite our paper if you find the work useful: 
 
-	@inproceedings{sun2021c2fnet,
-	title={Context-aware Cross-level Fusion Network for Camouflaged Object Detection},
-	author={Sun, Yujia and Chen, Geng and Zhou, Tao and Zhang, Yi and Liu, Nian},
-	booktitle={IJCAI},
-	pages = "1025--1031",
-	year={2021}
+	@inproceedings{DFUS-ViT,
+	title={DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer},
+	author={Muhammad Zaka-Ud-Din, Muhammad Usman, and Jacek Ruminski},
+	booktitle={Biocybernetics and Biomedical Engineering},
+	pages = " ",
+	year={202g}
 	}
 
-**[⬆ back to top](#1-preface)**
+**[⬆️ back to top](#1-preface)**
