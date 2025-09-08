@@ -1,4 +1,4 @@
-# DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer
+# DFUS-ViT: Multi-Scale Vision Transformer for Automated Diabetic Foot Ulcer Segmentation
 
 > **Authors:** 
 > Muhammad Zaka-Ud-Din,
@@ -7,7 +7,7 @@
 
 ## 1. Preface
 
-- This repository provides code for "_**DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer**_"
+- This repository provides code for "_**DFUS-ViT: Multi-Scale Vision Transformer for Automated Diabetic Foot Ulcer Segmentation**_"
 
 ## 2. Overview
 
@@ -86,7 +86,7 @@ Just run `eval.py` to evaluate the trained model.
 Please cite our paper if you find the work useful: 
 
 	@inproceedings{DFUS-ViT,
-	title={DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer},
+	title={DFUS-ViT: Multi-Scale Vision Transformer for Automated Diabetic Foot Ulcer Segmentation},
 	author={Muhammad Zaka-Ud-Din, Muhammad Usman, and Jacek Ruminski},
 	booktitle={Applied Soft Computing},
 	pages = " ",
