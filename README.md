@@ -7,7 +7,7 @@
 
 ## 1. Preface
 
-- This repository provides code for "_**DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer**_" Biocybernetics and Biomedical Engineering-2025. [![DFUS-ViT]([https://img.shields.io/badge/Arxiv-2105.12555-red?style=flat-square](https://img.shields.io/website-up-down-green-red/http/monip.org.svg ))](link)
+- This repository provides code for "_**DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer**_"
 
 ## 2. Overview
 
@@ -88,9 +88,9 @@ Please cite our paper if you find the work useful:
 	@inproceedings{DFUS-ViT,
 	title={DFUS-ViT: Multi-Scale, Color Camouflaged Diabetic Foot Ulcer Segmentation Using Vision Transformer},
 	author={Muhammad Zaka-Ud-Din, Muhammad Usman, and Jacek Ruminski},
-	booktitle={Biocybernetics and Biomedical Engineering},
+	booktitle={Applied Soft Computing},
 	pages = " ",
-	year={202g}
+	year={2025}
 	}
 
 **[⬆️ back to top](#1-preface)**
